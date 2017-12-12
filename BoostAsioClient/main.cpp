@@ -74,6 +74,7 @@ private:
 	io_service m_io;
 	buffer_type m_buf;
 	endpoint_type m_ep;
+	char buf[128];
 public:
 	client() : m_buf(100, 0), m_ep(address_type::from_string("127.0.0.1"), 1000)
 	{
@@ -100,7 +101,7 @@ public:
 		cout << "Receive from " << sock->remote_endpoint().address() << ": " << endl;
 		
 		sock->async_write_some(buffer("send to server"), boost::bind(&client::write_handler, this, boost::asio::placeholders::error, sock));
-		sock->async_read_some(buffer(m_buf), boost::bind(&client::read_handler, this, boost::asio::placeholders::error, sock));
+		sock->async_read_some(buffer(buf), boost::bind(&client::read_handler, this, boost::asio::placeholders::error, sock));
 	}
 
 	void read_handler(const boost::system::error_code&ec, sock_ptr sock)
@@ -109,8 +110,8 @@ public:
 		{
 			return;
 		}
-		sock->async_read_some(buffer(m_buf), boost::bind(&client::read_handler, this, boost::asio::placeholders::error, sock));
-		cout << &m_buf[0] << endl;
+		sock->async_read_some(buffer(buf), boost::bind(&client::read_handler, this, boost::asio::placeholders::error, sock));
+		cout << buf << endl;
 	}
 
 
