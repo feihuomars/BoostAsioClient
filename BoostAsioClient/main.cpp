@@ -39,6 +39,7 @@ private:
 			return;
 		}
 		std::cout << "receive from:" << sock->remote_endpoint().address() << std::endl;
+		
 		sock->async_read_some(buffer(m_buf),
 			std::bind(&Client1::read_handler, this, std::placeholders::_1));
 	}
@@ -55,6 +56,7 @@ private:
 	ip::tcp::endpoint m_ep;
 	enum { max_length = 1024 };
 	char m_buf[max_length];
+	
 };
 
 
@@ -96,6 +98,7 @@ public:
 			return;
 		}
 		cout << "Receive from " << sock->remote_endpoint().address() << ": " << endl;
+		
 		sock->async_write_some(buffer("send to server"), boost::bind(&client::write_handler, this, boost::asio::placeholders::error, sock));
 		sock->async_read_some(buffer(m_buf), boost::bind(&client::read_handler, this, boost::asio::placeholders::error, sock));
 	}
