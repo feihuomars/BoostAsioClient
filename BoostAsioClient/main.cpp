@@ -32,6 +32,7 @@ private:
 		sock_ptr sock(new socket_type(m_io));
 		sock->async_connect(m_ep, std::bind(&Client1::connect_handler, this, std::placeholders::_1, sock));
 	}
+
 	void connect_handler(const boost::system::error_code& ec, sock_ptr sock)
 	{
 		if (ec)
@@ -41,16 +42,44 @@ private:
 		std::cout << "receive from:" << sock->remote_endpoint().address() << std::endl;
 		
 		sock->async_read_some(buffer(m_buf),
-			std::bind(&Client1::read_handler, this, std::placeholders::_1));
+			std::bind(&Client1::read_handler, this, std::placeholders::_1, sock));
 	}
-	void read_handler(const boost::system::error_code& ec)
+
+	void read_handler(const boost::system::error_code& ec, sock_ptr sock)
 	{
 		if (ec)
 		{
 			return;
 		}
-		std::cout << "data: " << m_buf << std::endl;
+		//std::cout << "time: " << m_buf << std::endl;
+		sock->async_read_some(buffer(m_buf),
+			std::bind(&Client1::read_handler2, this, std::placeholders::_1, sock));
+
 	}
+
+	void read_handler2(const boost::system::error_code& ec, sock_ptr sock)
+	{
+		if (ec)
+		{
+			return;
+		}
+		//std::cout << "place: " << m_buf << std::endl;
+		sock->async_read_some(buffer(m_buf),
+			std::bind(&Client1::read_handler3, this, std::placeholders::_1, sock));
+
+	}
+
+	void read_handler3(const boost::system::error_code& ec, sock_ptr sock)
+	{
+		if (ec)
+		{
+			return;
+		}
+		std::cout << "buffer: " << m_buf << std::endl;
+		
+
+	}
+
 private:
 	io_service m_io;
 	ip::tcp::endpoint m_ep;
@@ -74,9 +103,12 @@ private:
 	io_service m_io;
 	buffer_type m_buf;
 	endpoint_type m_ep;
-	char buf[128];
+	char buf1[1024];
+	char buf2[1024];
+	char buf3[1024];
+	int i;
 public:
-	client() : m_buf(100, 0), m_ep(address_type::from_string("127.0.0.1"), 1000)
+	client() : m_buf(100, 0), m_ep(address_type::from_string("127.0.0.1"), 1000), i(0)
 	{
 		start();
 	}
@@ -101,7 +133,8 @@ public:
 		cout << "Receive from " << sock->remote_endpoint().address() << ": " << endl;
 		
 		sock->async_write_some(buffer("send to server"), boost::bind(&client::write_handler, this, boost::asio::placeholders::error, sock));
-		sock->async_read_some(buffer(buf), boost::bind(&client::read_handler, this, boost::asio::placeholders::error, sock));
+		sock->async_read_some(buffer(buf1), boost::bind(&client::read_handler, this, boost::asio::placeholders::error, sock));
+		cout << "buf1 before handle: " << buf1 << endl;
 	}
 
 	void read_handler(const boost::system::error_code&ec, sock_ptr sock)
@@ -110,8 +143,40 @@ public:
 		{
 			return;
 		}
-		sock->async_read_some(buffer(buf), boost::bind(&client::read_handler, this, boost::asio::placeholders::error, sock));
-		cout << buf << endl;
+		sock->async_read_some(buffer(buf2), boost::bind(&client::read_handler2, this, boost::asio::placeholders::error, sock));
+		cout << "buf2 before handle: " << buf2 << endl;
+		cout << "buf1: "<< buf1 << endl;
+	}
+
+	void read_handler2(const boost::system::error_code&ec, sock_ptr sock)
+	{
+		if (ec)
+		{
+			return;
+		}
+		sock->async_read_some(buffer(buf3), boost::bind(&client::read_handler3, this, boost::asio::placeholders::error, sock));
+		cout << "buf3 before handle: " << buf3 << endl;
+		cout << "buf2: " << buf2 << endl;
+	}
+
+	void read_handler3(const boost::system::error_code&ec, sock_ptr sock)
+	{
+		if (ec)
+		{
+			return;
+		}
+		//sock->async_read_some(buffer(buf), boost::bind(&client::read_handler4, this, boost::asio::placeholders::error, sock));
+		cout << "buf3: " << buf3 <<endl;
+	}
+
+	void read_handler4(const boost::system::error_code&ec, sock_ptr sock)
+	{
+		if (ec)
+		{
+			return;
+		}
+		
+		cout << "file received "  << endl;
 	}
 
 
