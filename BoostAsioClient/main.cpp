@@ -4,9 +4,10 @@
 #include <boost/asio/placeholders.hpp>
 #include <boost/system/error_code.hpp>
 #include <boost/bind/bind.hpp>
+#include <fstream>
+#include <boost/filesystem.hpp>
 
-
-
+#include "client.h"
 
 using namespace std;
 
@@ -223,24 +224,51 @@ int main(int argc, char* argv[])
 	//getchar();
 	
 
-	try
-	{
-		std::cout << "client start." << std::endl;
-		/*Client1 cl;
-		cl.run();*/
+	//try
+	//{
+	//	std::cout << "client start." << std::endl;
+	//	/*Client1 cl;
+	//	cl.run();*/
 
-		client cl;
-		cl.run();
+	//	client cl;
+	//	cl.run();
 
-	}
-	catch (std::exception& e)
-	{
-		std::cout << e.what() << std::endl;
-	}
-	getchar();
+	//}
+	//catch (std::exception& e)
+	//{
+	//	std::cout << e.what() << std::endl;
+	//}
+	//getchar();
 
+	//std::string path = "D://test/file_test_copy.t";
+	//std::ifstream fileStream;
+	//fileStream.open(path, std::ios_base::binary);
+	//if (fileStream.fail()) {
+	//	cout << "Faiked to open file" + path << endl;
+	//}
+	//else {
+	//	cout << "File open successfully" << endl;
+	//}
+	//fileStream.seekg(0, fileStream.end);	//文件指针移动至末尾
+	//std::streampos sp = fileStream.tellg();
+	//fileStream.seekg(0, fileStream.beg);
 
+	//boost::filesystem::path pathBoost(path);
+	//cout << "File name: " << pathBoost.string() << endl;
 
+	//cout << "File size: " << sp << endl;
+	//cout << "File content: " << fileStream.rdbuf() << endl;
+
+	//fileStream.close();
+
+	std::string path = "D://test/test_copy.txt";
+	boost::asio::io_service ioService;
+	boost::asio::ip::tcp::resolver resolver(ioService);
+	auto endpointIterator = resolver.resolve({ "127.0.0.1", "1000" });
+	Client client(ioService, endpointIterator, path);
+	ioService.run();
+
+	system("pause");
 
 	return 0;
 }
