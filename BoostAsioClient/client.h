@@ -33,6 +33,7 @@ private:
     boost::asio::streambuf m_request;
     std::ifstream m_sourceFile;
     std::string m_path;
+	char bufRecv[128];
 };
 
 

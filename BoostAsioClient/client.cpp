@@ -78,6 +78,16 @@ void Client::doWriteFile(const boost::system::error_code& t_ec)
 		else {
 			//发送完成位置
 			std::cout << "send file completed." << std::endl;
+			m_socket.async_read_some(boost::asio::buffer(bufRecv), [this](boost::system::error_code ec, size_t bytes) {
+				if (ec) {
+					std::cout << "extra recv failed" << std::endl;
+				}
+				else {
+
+					std::cout << "extra data: " << bufRecv << std::endl;
+				}
+
+			});
 		}
     } else {
         //BOOST_LOG_TRIVIAL(error) << "Error: " << t_ec.message();

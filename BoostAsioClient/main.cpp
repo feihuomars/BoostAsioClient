@@ -268,6 +268,9 @@ int main(int argc, char* argv[])
 	Client client(ioService, endpointIterator, path);
 	ioService.run();
 
+	
+
+
 	system("pause");
 
 	return 0;
