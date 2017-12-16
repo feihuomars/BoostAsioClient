@@ -46,7 +46,10 @@ void Client::doConnect()
         [this](boost::system::error_code ec, TcpResolverIterator)
         {
             if (!ec) {
-                writeBuffer(m_request);
+				std::string sendToServer;
+				//sendToServer = "D://test/test.txt\n10\ndata\n\n";
+				sendToServer = "hello";
+                writeBuffer(boost::asio::buffer(sendToServer));
             } else {
                 std::cout << "Coudn't connect to host. Please run server "
                     "or check network connection.\n";
