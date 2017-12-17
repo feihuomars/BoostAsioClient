@@ -49,7 +49,7 @@ void Client::doConnect()
 				std::string sendToServer;
 				//sendToServer = "D://test/test.txt\n10\ndata\n\n";
 				sendToServer = "hello";
-                writeBuffer(boost::asio::buffer(sendToServer));
+                writeBuffer(m_request);
             } else {
                 std::cout << "Coudn't connect to host. Please run server "
                     "or check network connection.\n";
