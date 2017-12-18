@@ -108,6 +108,8 @@ private:
 	char buf2[1024];
 	char buf3[1024];
 	int i;
+	boost::asio::streambuf streamBuf;
+
 public:
 	client() : m_buf(100, 0), m_ep(address_type::from_string("127.0.0.1"), 1000), i(0)
 	{
@@ -132,7 +134,15 @@ public:
 			return;
 		}
 		cout << "Receive from " << sock->remote_endpoint().address() << ": " << endl;
+		std::ostream ostream(&streamBuf);
+		ostream << "hello";
+		/*async_write(sock, 
+			streamBuf,
+			[this](error_code ec, size_t) {
 		
+		});*/
+
+
 		sock->async_write_some(buffer("send to server"), boost::bind(&client::write_handler, this, boost::asio::placeholders::error, sock));
 		sock->async_read_some(buffer(buf1), boost::bind(&client::read_handler, this, boost::asio::placeholders::error, sock));
 		cout << "buf1 before handle: " << buf1 << endl;

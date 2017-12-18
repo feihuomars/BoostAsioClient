@@ -23,6 +23,16 @@ private:
     void doWriteFile(const boost::system::error_code& t_ec);
     template<class Buffer>
     void writeBuffer(Buffer& t_buffer);
+	void repeatRecv(boost::system::error_code ec, size_t bytes);
+
+	//接收所需函数
+	void doRead();
+	void processRead(size_t t_bytesTransferred);
+	void createFile();
+	void readData(std::istream &stream);
+	void doReadFileContent(size_t t_bytesTransferred);
+	void handleError(std::string const& t_functionName, boost::system::error_code const& t_ec);
+
 
 
     TcpResolver m_ioService;
@@ -34,6 +44,16 @@ private:
     std::ifstream m_sourceFile;
     std::string m_path;
 	char bufRecv[128];
+
+	//接收所需变量
+	enum { MaxLength = 40960 };
+	std::array<char, MaxLength> m_bufforRecv;
+	boost::asio::streambuf m_requestBuf_;
+	std::ofstream m_outputFile;
+	size_t m_fileSize;
+	std::string m_data;
+	std::string m_fileName;
+
 };
 
 

@@ -1,7 +1,8 @@
 #include <string>
 #include <iostream>
-
+#include <boost/bind/bind.hpp>
 #include <boost/filesystem/path.hpp>
+#include <boost/filesystem.hpp>
 #include <boost/log/trivial.hpp>
 
 #include "client.h"
@@ -81,18 +82,128 @@ void Client::doWriteFile(const boost::system::error_code& t_ec)
 		else {
 			//发送完成位置
 			std::cout << "send file completed." << std::endl;
-			m_socket.async_read_some(boost::asio::buffer(bufRecv), [this](boost::system::error_code ec, size_t bytes) {
+			/*m_socket.async_read_some(boost::asio::buffer(bufRecv), [this](boost::system::error_code ec, size_t bytes) {
 				if (ec) {
 					std::cout << "extra recv failed" << std::endl;
 				}
 				else {
-
+					
 					std::cout << "extra data: " << bufRecv << std::endl;
+					repeatRecv(ec, bytes);
 				}
 
-			});
+			});*/
+			doRead();
 		}
     } else {
         //BOOST_LOG_TRIVIAL(error) << "Error: " << t_ec.message();
     }
+}
+
+void Client::repeatRecv(boost::system::error_code ec, size_t bytes) {
+	if (ec) {
+		std::cout << "extra recv failed" << std::endl;
+	}
+	else {
+		m_socket.async_read_some(boost::asio::buffer(bufRecv),
+			boost::bind(&Client::repeatRecv, this, ec, bytes));
+		std::cout << "file data: " << bufRecv << std::endl;
+	}
+}
+
+void Client::doRead()
+{
+	auto currentPath = boost::filesystem::path("D://test/clientRecv");
+	current_path(currentPath);
+	async_read_until(m_socket, m_requestBuf_, "\n\n",
+		[this](boost::system::error_code ec, size_t bytes)
+	{
+		if (!ec)
+			processRead(bytes);
+		else
+			handleError(__FUNCTION__, ec);
+	});
+}
+
+void Client::processRead(size_t t_bytesTransferred)
+{
+	/*BOOST_LOG_TRIVIAL(trace) << __FUNCTION__ << "(" << t_bytesTransferred << ")"
+	<< ", in_avail = " << m_requestBuf_.in_avail() << ", size = "
+	<< m_requestBuf_.size() << ", max_size = " << m_requestBuf_.max_size() << ".";*/
+
+	std::istream requestStream(&m_requestBuf_);
+	readData(requestStream);
+
+	auto pos = m_fileName.find_last_of('\\');
+	if (pos != std::string::npos)
+		m_fileName = m_fileName.substr(pos + 1);
+
+	createFile();
+
+	// write extra bytes to file
+	do {
+		requestStream.read(m_bufforRecv.data(), m_bufforRecv.size());
+		//BOOST_LOG_TRIVIAL(trace) << __FUNCTION__ << " write " << requestStream.gcount() << " bytes.";
+		m_outputFile.write(m_bufforRecv.data(), requestStream.gcount());
+	} while (requestStream.gcount() > 0);
+
+	
+	m_socket.async_read_some(boost::asio::buffer(m_bufforRecv.data(), m_bufforRecv.size()),
+		[this](boost::system::error_code ec, size_t bytes)
+	{
+		if (!ec)
+			doReadFileContent(bytes);
+		else
+			handleError(__FUNCTION__, ec);
+	});
+}
+
+void Client::readData(std::istream &stream)
+{
+	stream >> m_fileName;
+	stream >> m_fileSize;
+	stream >> m_data;
+	stream.read(m_bufforRecv.data(), 2);
+
+	/*BOOST_LOG_TRIVIAL(trace) << m_fileName << " size is " << m_fileSize
+	<< ", tellg = " << stream.tellg();*/
+}
+
+void Client::createFile()
+{
+	m_outputFile.open(m_fileName, std::ios_base::binary);
+	if (!m_outputFile) {
+		//BOOST_LOG_TRIVIAL(error) << __LINE__ << ": Failed to create: " << m_fileName;
+		return;
+	}
+}
+
+void Client::doReadFileContent(size_t t_bytesTransferred)
+{
+	if (t_bytesTransferred > 0) {
+		m_outputFile.write(m_bufforRecv.data(), static_cast<std::streamsize>(t_bytesTransferred));
+
+		//BOOST_LOG_TRIVIAL(trace) << __FUNCTION__ << " recv " << m_outputFile.tellp() << " bytes";
+
+		if (m_outputFile.tellp() >= static_cast<std::streamsize>(m_fileSize)) {
+			//接收完成位置
+			std::cout << "Received file: " << m_fileName << " size: " << m_fileSize << m_data << std::endl;
+			
+
+
+			return;
+		}
+	}
+	
+	m_socket.async_read_some(boost::asio::buffer(m_bufforRecv.data(), m_bufforRecv.size()),
+		[this](boost::system::error_code ec, size_t bytes)
+	{
+		doReadFileContent(bytes);
+	});
+}
+
+void Client::handleError(std::string const& t_functionName, boost::system::error_code const& t_ec)
+{
+	/*BOOST_LOG_TRIVIAL(error) << __FUNCTION__ << " in " << t_functionName << " due to "
+	<< t_ec << " " << t_ec.message() << std::endl;*/
 }
