@@ -46,7 +46,7 @@ private:
 	char bufRecv[128];
 
 	//接收所需变量
-	enum { MaxLength = 40960 };
+	enum { MaxLength = 4096 };
 	std::array<char, MaxLength> m_bufforRecv;
 	boost::asio::streambuf m_requestBuf_;
 	std::ofstream m_outputFile;

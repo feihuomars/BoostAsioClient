@@ -281,7 +281,7 @@ int main(int argc, char* argv[])
 	
 
 
-	system("pause");
+	//getchar();
 
 	return 0;
 }

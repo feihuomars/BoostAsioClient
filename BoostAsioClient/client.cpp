@@ -72,7 +72,7 @@ void Client::doWriteFile(const boost::system::error_code& t_ec)
             }
             std::stringstream ss;
             ss << "Send " << m_sourceFile.gcount() << " bytes, total: "
-                << m_sourceFile.tellg() << " bytes";
+                << m_sourceFile.tellg() << " bytes" << "   content: " << m_buf.data();
            // BOOST_LOG_TRIVIAL(trace) << ss.str();
             std::cout << ss.str() << std::endl;
 
@@ -145,17 +145,41 @@ void Client::processRead(size_t t_bytesTransferred)
 		requestStream.read(m_bufforRecv.data(), m_bufforRecv.size());
 		//BOOST_LOG_TRIVIAL(trace) << __FUNCTION__ << " write " << requestStream.gcount() << " bytes.";
 		m_outputFile.write(m_bufforRecv.data(), requestStream.gcount());
+		std::cout << "extra data: " << m_bufforRecv.data() << " count: " << requestStream.gcount() << std::endl;
 	} while (requestStream.gcount() > 0);
 
-	
-	m_socket.async_read_some(boost::asio::buffer(m_bufforRecv.data(), m_bufforRecv.size()),
+	//同步接收文件
+	while (true) {
+
+		if (m_outputFile.tellp() >= static_cast<std::streamsize>(m_fileSize)) {
+			std::cout << "接收完成" << std::endl;
+			break;
+		}
+		boost::system::error_code ec;
+		size_t len = m_socket.read_some(boost::asio::buffer(m_bufforRecv.data(), m_bufforRecv.size()), ec);
+		if (ec) {
+			std::cout << boost::system::system_error(ec).what() << std::endl;
+			break;
+		}
+		
+		
+		m_outputFile.write(m_bufforRecv.data(), static_cast<std::streamsize>(len));
+
+	}
+
+
+	//异步接收文件
+	/*m_socket.async_read_some(boost::asio::buffer(m_bufforRecv.data(), m_bufforRecv.size()),
 		[this](boost::system::error_code ec, size_t bytes)
 	{
-		if (!ec)
+		if (!ec) {
+			std::cout << "start recving " << bytes <<std::endl;
 			doReadFileContent(bytes);
+		}
+			
 		else
 			handleError(__FUNCTION__, ec);
-	});
+	});*/
 }
 
 void Client::readData(std::istream &stream)
@@ -184,7 +208,7 @@ void Client::doReadFileContent(size_t t_bytesTransferred)
 		m_outputFile.write(m_bufforRecv.data(), static_cast<std::streamsize>(t_bytesTransferred));
 
 		//BOOST_LOG_TRIVIAL(trace) << __FUNCTION__ << " recv " << m_outputFile.tellp() << " bytes";
-
+		std::cout << "Recving...content: " << m_bufforRecv.data();
 		if (m_outputFile.tellp() >= static_cast<std::streamsize>(m_fileSize)) {
 			//接收完成位置
 			std::cout << "Received file: " << m_fileName << " size: " << m_fileSize << m_data << std::endl;
