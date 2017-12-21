@@ -14,8 +14,8 @@ public:
     using TcpResolverIterator = TcpResolver::iterator;
     using TcpSocket = boost::asio::ip::tcp::socket;
 
-    Client(IoService& t_ioService, TcpResolverIterator t_endpointIterator, 
-        std::string const& t_path);
+    Client(IoService& t_ioService, TcpResolverIterator t_endpointIterator,
+		std::string const& t_path, std::string startTime, std::string endTime, std::string pictureID);
 
 private:
     void openFile(std::string const& t_path);
@@ -23,7 +23,6 @@ private:
     void doWriteFile(const boost::system::error_code& t_ec);
     template<class Buffer>
     void writeBuffer(Buffer& t_buffer);
-	void repeatRecv(boost::system::error_code ec, size_t bytes);
 
 	//接收所需函数
 	void doRead();
@@ -43,7 +42,9 @@ private:
     boost::asio::streambuf m_request;
     std::ifstream m_sourceFile;
     std::string m_path;
-	char bufRecv[128];
+	std::string startTime;
+	std::string endTime;
+	std::string pictureID;
 
 	//接收所需变量
 	enum { MaxLength = 4096 };
