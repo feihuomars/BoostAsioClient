@@ -4,9 +4,11 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/log/trivial.hpp>
-
+#include <boost/thread/thread.hpp>
 #include "client.h"
 
+
+void start() {}
 
 Client::Client(IoService& t_ioService, TcpResolverIterator t_endpointIterator, 
     std::string const& t_path, std::string startTime, std::string endTime, std::string pictureID)
@@ -18,6 +20,7 @@ Client::Client(IoService& t_ioService, TcpResolverIterator t_endpointIterator,
 	this->pictureID = pictureID;
     openFile(m_path);
 	doConnect();
+	boost::thread thrd(start);
 }
 
 
@@ -38,7 +41,8 @@ void Client::openFile(std::string const& t_path)
     std::ostream requestStream(&m_request);
     boost::filesystem::path p(t_path);
 	std::cout << "p.filename: " << p.filename().string() << p.string() << std::endl;
-	requestStream << p.filename().string() << "\n" << fileSize << "\n" << startTime << "\n\n";
+	requestStream << p.filename().string() << "\n" << fileSize << "\n" << startTime << 
+		"\n" << endTime << "\n" << pictureID << "\n\n";
     std::cout << "Request size: " << m_request.size() << std::endl;
 }
 
@@ -134,6 +138,8 @@ void Client::processRead(size_t t_bytesTransferred)
 		if (m_outputFile.tellp() >= static_cast<std::streamsize>(m_fileSize)) {
 			m_outputFile.close();
 			std::cout << "接收完成" << std::endl;
+			std::cout << "\nfilename: " << m_fileName << " fileSize: " << m_fileSize <<
+				"\nresultPos: " << resultPos << "\nresultTime: " << resultTime << "\nresultID: " << resultID << std::endl;
 			break;
 		}
 		boost::system::error_code ec;
@@ -167,7 +173,9 @@ void Client::readData(std::istream &stream)
 	//以'\n'为间隔读取字符串
 	stream >> m_fileName;
 	stream >> m_fileSize;
-	stream >> m_data;
+	stream >> resultPos;
+	stream >> resultTime;
+	stream >> resultID;
 	stream.read(m_bufforRecv.data(), 2);	//将最后的'\n\n'写入buf
 	std::cout << m_fileName << " size is " << m_fileSize
 	<< ", tellg = " << stream.tellg() << std::endl ;

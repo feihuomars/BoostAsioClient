@@ -31,8 +31,8 @@ public:
 		this->ipArr = ipArr;
 		this->path = path;
 		this->pictureID = pictureID;
-		this->startTime = startTime;
-		this->endTime = endTime;
+		this->startTime = startTime.replace(10, 1, "*");
+		this->endTime = endTime.replace(10, 1, "*");
 		startSingleClient();
 	}
 
@@ -83,13 +83,13 @@ int main(int argc, char* argv[])
 
 	vector<string> ipArr;
 	ipArr.push_back("1000");
-	ipArr.push_back("2000");
+	//ipArr.push_back("1000");
 
 	//cout << ipArr[0] << std::endl;
 	
 
 	
-	MultiClient multiClient(ipArr, "D:/test/test.txt", "2017-11-11*11:11:11", "2017-12-12 12:12:12", "233");
+	MultiClient multiClient(ipArr, "D:/test/test.txt", "2017-11-11 11:11:11", "2017-12-12 12:12:12", "233");
 	
 
 	system("pause");

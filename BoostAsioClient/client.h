@@ -54,7 +54,9 @@ private:
 	size_t m_fileSize;
 	std::string m_data;
 	std::string m_fileName;
-
+	std::string resultPos;
+	std::string resultTime;
+	std::string resultID;
 };
 
 
