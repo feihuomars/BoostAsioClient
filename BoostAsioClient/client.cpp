@@ -75,7 +75,7 @@ void Client::doWriteFile(const boost::system::error_code& t_ec)
             }
             std::stringstream ss;
             ss << "Send " << m_sourceFile.gcount() << " bytes, total: "
-                << m_sourceFile.tellg() << " bytes" << "   content: " << m_buf.data();
+                << m_sourceFile.tellg() << " bytes" ;
             std::cout << ss.str() << std::endl;
 
             auto buf = boost::asio::buffer(m_buf.data(), static_cast<size_t>(m_sourceFile.gcount()));
@@ -94,7 +94,7 @@ void Client::doWriteFile(const boost::system::error_code& t_ec)
 
 void Client::doRead()
 {
-	//设置当前工作目录
+	//此处设置当前工作目录
 	auto currentPath = boost::filesystem::path("D://test/clientRecv");
 	current_path(currentPath);
 	//读取直到'\n\n'的字符串信息
