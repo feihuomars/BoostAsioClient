@@ -21,15 +21,9 @@
     <ClCompile Include="client.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="MultiClient.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="client.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="MultiClient.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
