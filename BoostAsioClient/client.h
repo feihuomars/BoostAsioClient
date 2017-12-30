@@ -55,7 +55,8 @@ private:
 	std::string m_data;
 	std::string m_fileName;
 	std::string resultPos;
-	std::string resultTime;
+	std::string appearTime;	//人脸出现时间
+	std::string disappearTime; //人脸消失时间
 	std::string resultID;
 };
 

@@ -38,8 +38,11 @@ int main(int argc, char* argv[])
 	//ipArr.push_back("1000");
 	/*while (true) {
 		char x = getchar();
-		if (x != 'q') {
-			MultiClient multiClient(ipArr, "D:/test/test.txt", "2017-11-11 11:11:11", "2017-12-12 12:12:12", "233");
+		if (x == 'q') {
+			startSingleClient(ipArr, "D:/test/test.txt", "2017-11-11 11:11:11", "2017-12-12 12:12:12", "233");
+		}
+		if (x == 'w') {
+			startSingleClient(ipArr, "D:/test/server.txt", "2017-11-11 11:11:11", "2017-12-12 12:12:12", "233");
 		}
 	}*/
 	//参数：ip向量，图片路径，开始时间，截至时间，图片id

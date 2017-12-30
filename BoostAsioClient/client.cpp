@@ -10,6 +10,8 @@
 
 void start() {}
 
+const std::string recvDirectory = "D:/test/clientRecv/";
+
 Client::Client(IoService& t_ioService, TcpResolverIterator t_endpointIterator, 
     std::string const& t_path, std::string startTime, std::string endTime, std::string pictureID)
     : m_ioService(t_ioService), m_socket(t_ioService), 
@@ -83,6 +85,7 @@ void Client::doWriteFile(const boost::system::error_code& t_ec)
 		}
 		else {
 			//发送完成位置
+			m_sourceFile.close();
 			std::cout << "send file completed." << std::endl;
 			//开始接收服务器的返回信息
 			doRead();
@@ -95,8 +98,8 @@ void Client::doWriteFile(const boost::system::error_code& t_ec)
 void Client::doRead()
 {
 	//此处设置当前工作目录
-	auto currentPath = boost::filesystem::path("D://test/clientRecv");
-	current_path(currentPath);
+	auto currentPath = boost::filesystem::path("D:/test/Win32");
+	//current_path(currentPath);
 	//读取直到'\n\n'的字符串信息
 	async_read_until(m_socket, m_requestBuf_, "\n\n",
 		[this](boost::system::error_code ec, size_t bytes)
@@ -139,7 +142,7 @@ void Client::processRead(size_t t_bytesTransferred)
 			m_outputFile.close();
 			std::cout << "接收完成" << std::endl;
 			std::cout << "\nfilename: " << m_fileName << " fileSize: " << m_fileSize <<
-				"\nresultPos: " << resultPos << "\nresultTime: " << resultTime << "\nresultID: " << resultID << std::endl;
+				"\nresultPos: " << resultPos << "\nappearTime: " << appearTime << "\ndisappearTime: " << disappearTime << "\nresultID: " << resultID << std::endl;
 			break;
 		}
 		boost::system::error_code ec;
@@ -174,7 +177,8 @@ void Client::readData(std::istream &stream)
 	stream >> m_fileName;
 	stream >> m_fileSize;
 	stream >> resultPos;
-	stream >> resultTime;
+	stream >> appearTime;
+	stream >> disappearTime;
 	stream >> resultID;
 	stream.read(m_bufforRecv.data(), 2);	//将最后的'\n\n'写入buf
 	std::cout << m_fileName << " size is " << m_fileSize
@@ -183,7 +187,7 @@ void Client::readData(std::istream &stream)
 
 void Client::createFile()
 {
-	m_outputFile.open(m_fileName, std::ios_base::binary);
+	m_outputFile.open(recvDirectory + m_fileName, std::ios_base::binary);
 	if (!m_outputFile) {
 		std::cout << __LINE__ << ": Failed to create: " << m_fileName << std::endl;
 		return;
