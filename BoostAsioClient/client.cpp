@@ -13,13 +13,14 @@ void start() {}
 const std::string recvDirectory = "D:/test/clientRecv/";
 
 Client::Client(IoService& t_ioService, TcpResolverIterator t_endpointIterator, 
-    std::string const& t_path, std::string startTime, std::string endTime, std::string pictureID)
+    std::string const& t_path, std::string startTime, std::string endTime, std::string pictureID, std::string errorCode)
     : m_ioService(t_ioService), m_socket(t_ioService), 
     m_endpointIterator(t_endpointIterator), m_path(t_path)
 {
 	this->startTime = startTime;
 	this->endTime = endTime;
 	this->pictureID = pictureID;
+	this->errorCode = errorCode;
     openFile(m_path);
 	doConnect();
 	boost::thread thrd(start);

@@ -15,7 +15,7 @@ public:
     using TcpSocket = boost::asio::ip::tcp::socket;
 
     Client(IoService& t_ioService, TcpResolverIterator t_endpointIterator,
-		std::string const& t_path, std::string startTime, std::string endTime, std::string pictureID);
+		std::string const& t_path, std::string startTime, std::string endTime, std::string pictureID, std::string errorCode);
 
 private:
     void openFile(std::string const& t_path);
@@ -37,6 +37,7 @@ private:
     TcpResolver m_ioService;
     TcpSocket m_socket;
     TcpResolverIterator m_endpointIterator;
+	//发送所需变量
     enum { MessageSize = 1024 };
     std::array<char, MessageSize> m_buf;
     boost::asio::streambuf m_request;
@@ -45,6 +46,7 @@ private:
 	std::string startTime;
 	std::string endTime;
 	std::string pictureID;
+	std::string errorCode;
 
 	//接收所需变量
 	enum { MaxLength = 4096 };
