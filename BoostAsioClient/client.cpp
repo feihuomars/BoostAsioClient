@@ -45,7 +45,7 @@ void Client::openFile(std::string const& t_path)
     boost::filesystem::path p(t_path);
 	std::cout << "p.filename: " << p.filename().string() << p.string() << std::endl;
 	requestStream << p.filename().string() << "\n" << fileSize << "\n" << startTime << 
-		"\n" << endTime << "\n" << pictureID << "\n\n";
+		"\n" << endTime << "\n" << pictureID << "\n" << errorCode << "\n\n";
     std::cout << "Request size: " << m_request.size() << std::endl;
 }
 
@@ -143,7 +143,7 @@ void Client::processRead(size_t t_bytesTransferred)
 			m_outputFile.close();
 			std::cout << "接收完成" << std::endl;
 			std::cout << "\nfilename: " << m_fileName << " fileSize: " << m_fileSize <<
-				"\nresultPos: " << resultPos << "\nappearTime: " << appearTime << "\ndisappearTime: " << disappearTime << "\nresultID: " << resultID << std::endl;
+				"\nresultPos: " << resultPos << "\nappearTime: " << appearTime << "\ndisappearTime: " << disappearTime << "\nresultID: " << resultID << "\nerrorCode: " << errorCode << std::endl;
 			break;
 		}
 		boost::system::error_code ec;
@@ -181,6 +181,7 @@ void Client::readData(std::istream &stream)
 	stream >> appearTime;
 	stream >> disappearTime;
 	stream >> resultID;
+	stream >> errorCode;
 	stream.read(m_bufforRecv.data(), 2);	//将最后的'\n\n'写入buf
 	std::cout << m_fileName << " size is " << m_fileSize
 	<< ", tellg = " << stream.tellg() << std::endl ;
