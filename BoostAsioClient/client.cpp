@@ -13,7 +13,7 @@ void start() {}
 const std::string recvDirectory = "D:/test/clientRecv/";
 
 Client::Client(IoService& t_ioService, TcpResolverIterator t_endpointIterator, 
-    std::string const& t_path, std::string startTime, std::string endTime, std::string pictureID, std::string errorCode)
+    std::string const& t_path, std::string startTime, std::string endTime, std::string pictureID, std::string errorCode, std::string zipCode)
     : m_ioService(t_ioService), m_socket(t_ioService), 
     m_endpointIterator(t_endpointIterator), m_path(t_path)
 {
@@ -21,6 +21,7 @@ Client::Client(IoService& t_ioService, TcpResolverIterator t_endpointIterator,
 	this->endTime = endTime;
 	this->pictureID = pictureID;
 	this->errorCode = errorCode;
+	this->zipCode = zipCode;
     openFile(m_path);
 	doConnect();
 	boost::thread thrd(start);
@@ -45,7 +46,7 @@ void Client::openFile(std::string const& t_path)
     boost::filesystem::path p(t_path);
 	std::cout << "p.filename: " << p.filename().string() << p.string() << std::endl;
 	requestStream << p.filename().string() << "\n" << fileSize << "\n" << startTime << 
-		"\n" << endTime << "\n" << pictureID << "\n" << errorCode << "\n\n";
+		"\n" << endTime << "\n" << pictureID << "\n" << errorCode << "\n" << zipCode << "\n\n";
     std::cout << "Request size: " << m_request.size() << std::endl;
 }
 
@@ -143,7 +144,8 @@ void Client::processRead(size_t t_bytesTransferred)
 			m_outputFile.close();
 			std::cout << "接收完成" << std::endl;
 			std::cout << "\nfilename: " << m_fileName << " fileSize: " << m_fileSize <<
-				"\nresultPos: " << resultPos << "\nappearTime: " << appearTime << "\ndisappearTime: " << disappearTime << "\nresultID: " << resultID << "\nerrorCode: " << errorCode << std::endl;
+				"\nresultPos: " << resultPos << "\nappearTime: " << appearTime << "\ndisappearTime: " << disappearTime << "\nresultID: " << resultID << 
+				"\nerrorCode: " << errorCode << "\nrecvZipCode: " << recvZipCode << std::endl;
 			break;
 		}
 		boost::system::error_code ec;
@@ -182,6 +184,7 @@ void Client::readData(std::istream &stream)
 	stream >> disappearTime;
 	stream >> resultID;
 	stream >> errorCode;
+	stream >> recvZipCode;
 	stream.read(m_bufforRecv.data(), 2);	//将最后的'\n\n'写入buf
 	std::cout << m_fileName << " size is " << m_fileSize
 	<< ", tellg = " << stream.tellg() << std::endl ;

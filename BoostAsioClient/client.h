@@ -15,7 +15,7 @@ public:
     using TcpSocket = boost::asio::ip::tcp::socket;
 
     Client(IoService& t_ioService, TcpResolverIterator t_endpointIterator,
-		std::string const& t_path, std::string startTime, std::string endTime, std::string pictureID, std::string errorCode);
+		std::string const& t_path, std::string startTime, std::string endTime, std::string pictureID, std::string errorCode, std::string zipCode);
 
 private:
     void openFile(std::string const& t_path);
@@ -47,6 +47,7 @@ private:
 	std::string endTime;
 	std::string pictureID;
 	std::string errorCode;
+	std::string zipCode;
 
 	//接收所需变量
 	enum { MaxLength = 4096 };
@@ -60,6 +61,7 @@ private:
 	std::string appearTime;	//人脸出现时间
 	std::string disappearTime; //人脸消失时间
 	std::string resultID;
+	std::string recvZipCode;
 };
 
 
