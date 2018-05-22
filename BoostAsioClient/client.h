@@ -58,10 +58,11 @@ private:
 	std::string m_data;
 	std::string m_fileName;
 	std::string resultPos;
-	std::string appearTime;	//人脸出现时间
-	std::string disappearTime; //人脸消失时间
-	std::string resultID;
-	std::string recvZipCode;
+	std::string appearTime;		//人脸出现时间
+	std::string disappearTime;	//人脸消失时间
+	std::string resultID;		//返回到的图片ID
+	std::string recvZipCode;	//返回到的IP地址
+	std::string picSimilarity;	//返回的图片相似度
 };
 
 

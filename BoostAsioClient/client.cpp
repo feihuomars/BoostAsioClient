@@ -145,7 +145,7 @@ void Client::processRead(size_t t_bytesTransferred)
 			std::cout << "接收完成" << std::endl;
 			std::cout << "\nfilename: " << m_fileName << " fileSize: " << m_fileSize <<
 				"\nresultPos: " << resultPos << "\nappearTime: " << appearTime << "\ndisappearTime: " << disappearTime << "\nresultID: " << resultID << 
-				"\nerrorCode: " << errorCode << "\nrecvZipCode: " << recvZipCode << std::endl;
+				"\nerrorCode: " << errorCode << "\nrecvZipCode: " << recvZipCode << "\npicSimilarity: " << picSimilarity << std::endl;
 			break;
 		}
 		boost::system::error_code ec;
@@ -185,6 +185,7 @@ void Client::readData(std::istream &stream)
 	stream >> resultID;
 	stream >> errorCode;
 	stream >> recvZipCode;
+	stream >> picSimilarity;
 	stream.read(m_bufforRecv.data(), 2);	//将最后的'\n\n'写入buf
 	std::cout << m_fileName << " size is " << m_fileSize
 	<< ", tellg = " << stream.tellg() << std::endl ;
